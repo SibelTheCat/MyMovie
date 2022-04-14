@@ -39,6 +39,7 @@ fun DetailScreen(
                         })
 
                     Spacer(modifier = Modifier.width(20.dp))
+                    Text(text = movie.title)
 
                 }
 

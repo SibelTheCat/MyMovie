@@ -36,9 +36,9 @@ fun HomeScreen(movie: List<Movie> = getMovies(),
     Scaffold(
         //topBar und TopAppBar sind selber composables -> deshalb geschwungene Klammern
         topBar = {
-            TopAppBar(title = { Text(text = "") },
+            TopAppBar(title = { Text("Movies") },
                 actions = {
-
+                    Row {
                     IconButton(onClick = { showMenu = !showMenu }) {
                         //moreVert ist das drei Punkte Icon
                         Icon(imageVector = Icons.Default.MoreVert, contentDescription = "drop down")
@@ -62,7 +62,8 @@ fun HomeScreen(movie: List<Movie> = getMovies(),
                             }
                         }
                     }
-                }
+
+                }}
             )
         }
     ) {
