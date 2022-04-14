@@ -1,15 +1,13 @@
 package com.example.mymovie.screens.favorite
 
+import android.widget.ThemedSpinnerAdapter
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Icon
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
@@ -35,7 +33,7 @@ fun FavouriteScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(backgroundColor = Color.Cyan, elevation = 3.dp) {
+            TopAppBar(backgroundColor = MaterialTheme.colors.primary, elevation = 3.dp) {
                 Row {
                     Icon(imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Arrow back",
@@ -60,22 +58,7 @@ fun MainContent (viewModel: FavoriteMovieViewModel = viewModel(), favMovies: Lis
             MovieRow(favMovie,viewModel.getAllFavMovies(),
                 onItemClick = { movieId -> navController.navigate(route = MovieScreens.DetailScreen.name + "/$movieId")},
                 withOrWithoutHeart = false)
-            //callback wird auch der Funktion MovieRow übergeben
-          //  { movieId->
-            //    navController.navigate(route = MovieScreens.DetailScreen.name+"/$movieId")
-          //  }
 
 }}}
 
-/*
-@Composable
-fun MainContent (movieIds: List<String?> = listOf("tt0499549", "tt0816692", "tt2707408" ), navController: NavController= rememberNavController()) {
-    LazyColumn {
-        items(movieIds){ movieId ->
-            MovieRow(filterMovie(movieId))
-            //callback wird auch der Funktion MovieRow übergeben
-            { movieId->
-                navController.navigate(route = MovieScreens.DetailScreen.name+"/$movieId")
-            }
 
-        }}}*/

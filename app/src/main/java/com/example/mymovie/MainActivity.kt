@@ -15,33 +15,18 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyApp {
-                //HomeScreen(movie = getMovies())
-                MovieNavigation()  // HomeScreen() --> Detailscreen
+                MovieNavigation()
             }
-
-          /*  MyMovieTheme {
-
-                // A surface container using the 'background' color from the theme
-
-                MainContent(movie = getMovies())
-
-            }*/
         }
     }
 
 
 @Composable
-
-    fun MyApp(content: @Composable ()  -> Unit){
-
-
+fun MyApp(content: @Composable ()  -> Unit){
     MyMovieTheme {
         // A surface container using the 'background' color from the theme
         //observable Variable -> hier ein boolean value
-
              content()
-
-
     }}
 
 

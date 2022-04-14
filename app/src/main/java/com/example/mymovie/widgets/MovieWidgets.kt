@@ -34,17 +34,15 @@ import com.example.testapp.models.getMovies
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MovieRow(
+    //CallBack Function kann als lambda übergeben werden
     movie: Movie = getMovies()[0],
     favMovies: List<Movie> = listOf(),
-             //CallBack Function kann als lambda übergeben werden
     onItemClick: (String)-> Unit = {},
     yesHeart: (Movie) -> Unit = {},
     noHeart: (Movie) -> Unit = {},
     withOrWithoutHeart: Boolean
-   // favorite: (Movie, (Movie) -> Unit, (Movie) -> Unit) -> Unit = { movie: Movie, function: (Movie) -> Unit, function1: (Movie) -> Unit -> },
     ){
     var upDown by remember {
-
         mutableStateOf(false)
     }
 
@@ -57,8 +55,7 @@ fun MovieRow(
 
             //wenn auf die Card geklickt wird, wird die übergebene Funkton "onItemClick"
             // mit der movie id auf des geklckten Films aufgerufen
-            .clickable { onItemClick(movie.id) }
-        ,
+            .clickable { onItemClick(movie.id) },
 
         shape = RoundedCornerShape(corner = CornerSize(15.dp)),
         elevation = 4.dp
@@ -68,29 +65,25 @@ fun MovieRow(
             Surface(modifier = Modifier
                 .size(120.dp)
                 .padding(12.dp)
-                 //,elevation = 4.dp
+
                  ) {
-               // Icon(imageVector = Icons.Default.AccountBox, contentDescription = "Movie picture", modifier = Modifier.size(80.dp))
-         //  AsyncImage(model = movie.images[0], contentDescription = movie.title )
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(movie.images[0])
                         .crossfade(true)
                         .build(),
-                  //  placeholder = painterResource(R.drawable.placeholder),
 
                     contentDescription = movie.title,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.clip(CircleShape)
                 )
             }
-            Row() {
+            Row {
                 Column(modifier = Modifier.align(alignment = Alignment.CenterVertically)) {
                     Text(
                         text = "${movie.title}",
                         fontSize = 20.sp,
                         style = MaterialTheme.typography.body2
-
                     )
 
                     Text(
@@ -100,7 +93,6 @@ fun MovieRow(
 
                     Text(
                         text = "Released: ${movie.year}", style = MaterialTheme.typography.overline
-
                     )
                     if (!upDown) {
                         Icon(imageVector = Icons.Default.KeyboardArrowUp,
@@ -143,9 +135,7 @@ fun MovieRow(
                         .fillMaxWidth()
                         .padding(8.dp)
                 ) {
-
                    FavoriteIcon (movie = movie, favMovies = favMovies, yesHeart = {movie -> yesHeart(movie)}, noHeart = {movie ->noHeart(movie)})
-                    //favorite(movie, yesHeart, noHeart)
                 }}}
         }
 
@@ -170,10 +160,7 @@ fun HorizontalScrolllabelImageView(movie : Movie = getMovies()[0]){
 
                    contentDescription = "movie picture",
                    )
-
            }
-
-
        }
    }
 }
@@ -197,12 +184,11 @@ fun FavoriteIcon (movie:Movie, favMovies: List<Movie>,
             .padding(8.dp)
             .size(20.dp)
             .clickable(onClick = {
-                    filledHeart = true;
-                    yesHeart(movie)
+                    filledHeart = true
+                yesHeart(movie)
             }
 
             ))
-
 }
     else{
         Icon(imageVector = Icons.Default.Favorite,
@@ -212,17 +198,16 @@ fun FavoriteIcon (movie:Movie, favMovies: List<Movie>,
                 .padding(8.dp)
                 .size(20.dp)
                 .clickable(onClick = {
-                        filledHeart = false;
-                        noHeart(movie)
-
+                        filledHeart = false
+                    noHeart(movie)
                 }
 
                 ))
     }}
 
 fun checkHeart(favMovies: List<Movie>, movie: Movie): Boolean {
-    when (movie) {
-        in favMovies -> return true
-        else -> return false
+    return when (movie) {
+        in favMovies -> true
+        else -> false
     }
 }

@@ -20,12 +20,14 @@ import com.example.mymovie.widgets.MovieRow
 import com.example.testapp.models.Movie
 import com.example.testapp.models.getMovies
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.mymovie.widgets.FavoriteIcon
+
 
 @Preview(showBackground = true)
 @Composable
-fun HomeScreen(movie: List<Movie> = getMovies(), navController: NavController = rememberNavController(),
+fun HomeScreen(movie: List<Movie> = getMovies(),
+               navController: NavController = rememberNavController(),
                viewModel: FavoriteMovieViewModel = viewModel()) {
+
     var showMenu by remember {
         mutableStateOf(false)
     }
@@ -45,7 +47,7 @@ fun HomeScreen(movie: List<Movie> = getMovies(), navController: NavController = 
                     //onDismissRequest -> wenn das DropDownMenu wieder geschlossen wird-> welche Events sollen passieren
                     DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
 
-                        Column() {
+                        Column {
 
                             DropdownMenuItem(onClick = {  navController.navigate(route = MovieScreens.FavoriteScreen.name) },
                                 modifier = Modifier.width(150.dp)) {
@@ -90,10 +92,6 @@ fun MainContent(
                     yesHeart = { movie -> viewModel.addFavMovie(movie) },
                     noHeart = { movie -> viewModel.removeFavMovie(movie) },
                     withOrWithoutHeart = true)
-                 //   favorite = (movie,{ movie -> viewModel.removeFavMovie(movie) }, { movie -> viewModel.addFavMovie(movie) } )
-
-                //callback wird auch der Funktion MovieRow übergeben
-
             }
         }
     }}
