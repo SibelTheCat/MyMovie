@@ -12,32 +12,37 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.materialIcon
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.modifier.modifierLocalOf
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import com.example.mymovie.R
 import com.example.testapp.models.Movie
 import com.example.testapp.models.getMovies
 
+
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun MovieRow(movie: Movie = getMovies()[0],
+fun MovieRow(
+    movie: Movie = getMovies()[0],
+    favMovies: List<Movie> = listOf(),
              //CallBack Function kann als lambda übergeben werden
-             onItemClick: (String)-> Unit = {}){
+    onItemClick: (String)-> Unit = {},
+    yesHeart: (Movie) -> Unit = {},
+    noHeart: (Movie) -> Unit = {},
+    withOrWithoutHeart: Boolean
+   // favorite: (Movie, (Movie) -> Unit, (Movie) -> Unit) -> Unit = { movie: Movie, function: (Movie) -> Unit, function1: (Movie) -> Unit -> },
+    ){
     var upDown by remember {
 
         mutableStateOf(false)
@@ -79,44 +84,69 @@ fun MovieRow(movie: Movie = getMovies()[0],
                     modifier = Modifier.clip(CircleShape)
                 )
             }
-            Column(modifier = Modifier.align(alignment = Alignment.CenterVertically)) { Text(
-                text = "${movie.title}", fontSize = 20.sp, style = MaterialTheme.typography.body2
+            Row() {
+                Column(modifier = Modifier.align(alignment = Alignment.CenterVertically)) {
+                    Text(
+                        text = "${movie.title}",
+                        fontSize = 20.sp,
+                        style = MaterialTheme.typography.body2
 
-            )
-                Text(
-                    text = "Director: ${movie.director}", style = MaterialTheme.typography.overline
+                    )
 
-                )
-                Text(
-                    text = "Released: ${movie.year}",style = MaterialTheme.typography.overline
+                    Text(
+                        text = "Director: ${movie.director}",
+                        style = MaterialTheme.typography.overline
+                    )
 
-                )
-                if (!upDown){
-                    Icon(imageVector = Icons.Default.KeyboardArrowUp,
-                        contentDescription = "arrow is down",
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .size(20.dp)
-                            .clickable(onClick = { upDown = !upDown }))
-                }
+                    Text(
+                        text = "Released: ${movie.year}", style = MaterialTheme.typography.overline
 
-                AnimatedVisibility(visible = upDown) {
-                    Column(modifier = Modifier.padding(4.dp)) {
-
-
-                        Text(text = "Plot: ${movie.plot}",style = MaterialTheme.typography.overline)
-                        Divider(thickness = 1.dp, modifier = Modifier.padding())
-                        Text(text = "Actors: ${movie.actors}",style = MaterialTheme.typography.overline)
-                        Text(text = "Genre: ${movie.genre}",style = MaterialTheme.typography.overline)
-                        Text(text = "Rating: ${movie.rating}",style = MaterialTheme.typography.overline)
-                        Icon(imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = "arrow is up",
+                    )
+                    if (!upDown) {
+                        Icon(imageVector = Icons.Default.KeyboardArrowUp,
+                            contentDescription = "arrow is down",
                             modifier = Modifier
                                 .padding(8.dp)
                                 .size(20.dp)
                                 .clickable(onClick = { upDown = !upDown }))
                     }
-                }}
+
+                    AnimatedVisibility(visible = upDown) {
+                        Column(modifier = Modifier.padding(4.dp)) {
+
+
+                            Text(text = "Plot: ${movie.plot}",
+                                style = MaterialTheme.typography.overline)
+                            Divider(thickness = 1.dp, modifier = Modifier.padding())
+                            Text(text = "Actors: ${movie.actors}",
+                                style = MaterialTheme.typography.overline)
+                            Text(text = "Genre: ${movie.genre}",
+                                style = MaterialTheme.typography.overline)
+                            Text(text = "Rating: ${movie.rating}",
+                                style = MaterialTheme.typography.overline)
+                            Icon(imageVector = Icons.Default.KeyboardArrowDown,
+                                contentDescription = "arrow is up",
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .size(20.dp)
+                                    .clickable(onClick = { upDown = !upDown }))
+                        }
+                    }
+                }
+
+            }
+
+            if(withOrWithoutHeart){
+            Column(modifier = Modifier.align(alignment = Alignment.CenterVertically).fillMaxWidth()) {
+                Row(horizontalArrangement = Arrangement.End,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                ) {
+
+                   FavoriteIcon (movie = movie, favMovies = favMovies, yesHeart = {movie -> yesHeart(movie)}, noHeart = {movie ->noHeart(movie)})
+                    //favorite(movie, yesHeart, noHeart)
+                }}}
         }
 
     }
@@ -127,7 +157,9 @@ fun HorizontalScrolllabelImageView(movie : Movie = getMovies()[0]){
    LazyRow {
        items(movie.images){ image->
            Card(
-               modifier = Modifier.padding(12.dp).size(240.dp),
+               modifier = Modifier
+                   .padding(12.dp)
+                   .size(240.dp),
                elevation = 4.dp
            ){
                AsyncImage(
@@ -144,4 +176,53 @@ fun HorizontalScrolllabelImageView(movie : Movie = getMovies()[0]){
 
        }
    }
+}
+
+@Composable
+fun FavoriteIcon (movie:Movie, favMovies: List<Movie>,
+    yesHeart: (Movie) -> Unit = {},
+                  noHeart: (Movie) -> Unit = {}
+
+){
+    var filledHeart by remember {
+
+        mutableStateOf(checkHeart(favMovies, movie))
+    }
+
+    if(!filledHeart){
+    Icon(imageVector = Icons.Default.FavoriteBorder,
+        contentDescription = "heart outline",
+        tint = Color.Blue,
+        modifier = Modifier
+            .padding(8.dp)
+            .size(20.dp)
+            .clickable(onClick = {
+                    filledHeart = true;
+                    yesHeart(movie)
+            }
+
+            ))
+
+}
+    else{
+        Icon(imageVector = Icons.Default.Favorite,
+            contentDescription = "heart filled",
+            tint = Color.Blue,
+            modifier = Modifier
+                .padding(8.dp)
+                .size(20.dp)
+                .clickable(onClick = {
+                        filledHeart = false;
+                        noHeart(movie)
+
+                }
+
+                ))
+    }}
+
+fun checkHeart(favMovies: List<Movie>, movie: Movie): Boolean {
+    when (movie) {
+        in favMovies -> return true
+        else -> return false
+    }
 }

@@ -15,14 +15,17 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mymovie.navigation.MovieScreens
-import com.example.mymovie.ui.theme.MyMovieTheme
+import com.example.mymovie.viewmodels.FavoriteMovieViewModel
 import com.example.mymovie.widgets.MovieRow
 import com.example.testapp.models.Movie
 import com.example.testapp.models.getMovies
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.mymovie.widgets.FavoriteIcon
 
 @Preview(showBackground = true)
 @Composable
-fun HomeScreen(movie: List<Movie> = getMovies(), navController: NavController = rememberNavController()) {
+fun HomeScreen(movie: List<Movie> = getMovies(), navController: NavController = rememberNavController(),
+               viewModel: FavoriteMovieViewModel = viewModel()) {
     var showMenu by remember {
         mutableStateOf(false)
     }
@@ -63,7 +66,7 @@ fun HomeScreen(movie: List<Movie> = getMovies(), navController: NavController = 
     ) {
 
 
-        MainContent(movie = movie, navController = navController)
+        MainContent(movie = movie, navController = navController, viewModel = viewModel)
     }
 }
 
@@ -72,20 +75,25 @@ fun MainContent(
     movie: List<Movie> = getMovies(),
     // brauch ich zum navigieren
     navController: NavController = rememberNavController(),
+    viewModel: FavoriteMovieViewModel = viewModel(),
 )  {
 
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colors.background
-    ){
+    ) {
         LazyColumn {
-            items(movie){ movie ->
-                MovieRow(movie)
+            items(movie) { movie ->
+                MovieRow(movie,
+                    viewModel.getAllFavMovies(),
+                    onItemClick = { movieId -> navController.navigate(route = MovieScreens.DetailScreen.name + "/$movieId")},
+                    yesHeart = { movie -> viewModel.addFavMovie(movie) },
+                    noHeart = { movie -> viewModel.removeFavMovie(movie) },
+                    withOrWithoutHeart = true)
+                 //   favorite = (movie,{ movie -> viewModel.removeFavMovie(movie) }, { movie -> viewModel.addFavMovie(movie) } )
+
                 //callback wird auch der Funktion MovieRow übergeben
-                { movieId->
-                    navController.navigate(route = MovieScreens.DetailScreen.name+"/$movieId")
-                }
+
             }
         }
-    }
-}
+    }}

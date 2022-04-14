@@ -17,18 +17,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mymovie.navigation.MovieScreens
-import com.example.mymovie.screens.detail.MainContent
-import com.example.mymovie.screens.detail.filterMovie
+import com.example.mymovie.viewmodels.FavoriteMovieViewModel
 import com.example.mymovie.widgets.MovieRow
+import com.example.testapp.models.Movie
+
 
 @Preview(showBackground = true)
 @Composable
 fun FavouriteScreen(
     navController: NavController = rememberNavController(),
-    movieIds: List<String?> = listOf("tt0499549", "tt0816692", "tt2707408" )){
+    viewModel: FavoriteMovieViewModel = viewModel(),
+    favMovies: List<Movie> = viewModel.getAllFavMovies()){
 
     Scaffold(
         topBar = {
@@ -47,9 +50,24 @@ fun FavouriteScreen(
             }
         }
     ) {
-        MainContent(movieIds, navController)
+        MainContent(viewModel, favMovies, navController)
     }
 }
+@Composable
+fun MainContent (viewModel: FavoriteMovieViewModel = viewModel(), favMovies: List<Movie> = viewModel.getAllFavMovies(), navController: NavController= rememberNavController()) {
+    LazyColumn {
+        items(favMovies){ favMovie ->
+            MovieRow(favMovie,viewModel.getAllFavMovies(),
+                onItemClick = { movieId -> navController.navigate(route = MovieScreens.DetailScreen.name + "/$movieId")},
+                withOrWithoutHeart = false)
+            //callback wird auch der Funktion MovieRow übergeben
+          //  { movieId->
+            //    navController.navigate(route = MovieScreens.DetailScreen.name+"/$movieId")
+          //  }
+
+}}}
+
+/*
 @Composable
 fun MainContent (movieIds: List<String?> = listOf("tt0499549", "tt0816692", "tt2707408" ), navController: NavController= rememberNavController()) {
     LazyColumn {
@@ -60,4 +78,4 @@ fun MainContent (movieIds: List<String?> = listOf("tt0499549", "tt0816692", "tt2
                 navController.navigate(route = MovieScreens.DetailScreen.name+"/$movieId")
             }
 
-}}}
+        }}}*/

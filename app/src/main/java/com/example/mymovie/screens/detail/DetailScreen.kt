@@ -10,8 +10,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.mymovie.navigation.MovieScreens
+import com.example.mymovie.viewmodels.FavoriteMovieViewModel
 import com.example.mymovie.widgets.HorizontalScrolllabelImageView
 import com.example.mymovie.widgets.MovieRow
 import com.example.testapp.models.Movie
@@ -21,7 +24,8 @@ import com.example.testapp.models.getMovies
 @Composable
 fun DetailScreen(
     navController: NavController = rememberNavController(),
-    movieId: String? = "tt0499549") {
+    movieId: String? = "tt0499549",
+            viewModel: FavoriteMovieViewModel = viewModel()) {
 
     val movie = filterMovie(movieId = movieId)
 
@@ -42,14 +46,19 @@ fun DetailScreen(
             }
         }
     ) {
-        MainContent(movie)
+        MainContent(movie, viewModel)
     }
 }
 
 @Composable
-fun MainContent(movie: Movie){
+fun MainContent(movie: Movie, viewModel: FavoriteMovieViewModel = viewModel()){
 Column {
-    MovieRow(movie = movie)
+    MovieRow(movie = movie,
+        viewModel.getAllFavMovies(),
+        yesHeart = { movie -> viewModel.addFavMovie(movie) },
+        noHeart = { movie -> viewModel.removeFavMovie(movie) },
+        withOrWithoutHeart = true
+    )
     Text(text = movie.title, style = MaterialTheme.typography.h5)
     Spacer(modifier = Modifier.height(8.dp))
     Divider()

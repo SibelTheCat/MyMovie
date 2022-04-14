@@ -62,4 +62,7 @@ dependencies {
     implementation"androidx.navigation:navigation-compose:$nav_version"
 //Coil
     implementation"io.coil-kt:coil-compose:$coil_version"
+
+    // ViewModel utilities for Compose
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
 }

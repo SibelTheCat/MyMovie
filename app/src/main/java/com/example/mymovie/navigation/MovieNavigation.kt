@@ -1,6 +1,7 @@
 package com.example.mymovie.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -9,12 +10,14 @@ import androidx.navigation.navArgument
 import com.example.mymovie.screens.detail.DetailScreen
 import com.example.mymovie.screens.favorite.FavouriteScreen
 import com.example.mymovie.screens.home.HomeScreen
+import com.example.mymovie.viewmodels.FavoriteMovieViewModel
 import com.example.testapp.models.getMovies
 
 @Composable
 fun MovieNavigation(){
     //navcontroller Instanz wird erstellt. ist stateful
     val navController = rememberNavController()
+    val movieViewModel: FavoriteMovieViewModel = viewModel()
 
     //Nav host ist der container
     //nac Controller Instanz und Start Destination wird übergeben
@@ -22,7 +25,7 @@ fun MovieNavigation(){
 
         //Navigation Graph
         //in der Klammer wird festgelegt wie die unique route heissen
-        composable(route = MovieScreens.HomeScreen.name) { HomeScreen(movie = getMovies(), navController = navController)}
+        composable(route = MovieScreens.HomeScreen.name) { HomeScreen(movie = getMovies(), navController = navController, viewModel = movieViewModel)}
 
         //Url www.domain.at/detailscreen/id=12345
         //weitere Parameter können mit einem weiteren /{weiteres Argument} übergeben werden
@@ -38,9 +41,9 @@ fun MovieNavigation(){
 
         //WICHTIG beim Aufruf darauf achten, dass ja die Destination sich jetzt geändert hat
         ){ backStackEntry ->
-            DetailScreen(navController = navController, movieId = backStackEntry.arguments?.getString("movie"))
+            DetailScreen(navController = navController, movieId = backStackEntry.arguments?.getString("movie"),viewModel = movieViewModel )
         }
-        composable(route = MovieScreens.FavoriteScreen.name) { FavouriteScreen( navController = navController) }
+        composable(route = MovieScreens.FavoriteScreen.name) { FavouriteScreen( navController = navController, viewModel = movieViewModel, favMovies = movieViewModel.getAllFavMovies() ) }
 
     }
     }
